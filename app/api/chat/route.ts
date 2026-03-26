@@ -94,7 +94,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "OPENAI_API_KEY is not set" }, { status: 500 });
   }
 
-  const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
+  const model = process.env.OPENAI_MODEL || "gpt-5.4-mini";
   const vectorStoreId = process.env.OPENAI_VECTOR_STORE_ID;
 
   const temperature = process.env.OPENAI_TEMPERATURE;
