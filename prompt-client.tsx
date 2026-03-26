@@ -12,6 +12,9 @@ export default function AdminClient() {
   const [files, setFiles] = useState<Array<{ id: string; filename?: string }>>([]);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [filesMessage, setFilesMessage] = useState<string | null>(null);
+  const [viewingFile, setViewingFile] = useState<{ id: string; filename?: string } | null>(null);
+  const [fileContent, setFileContent] = useState<string | null>(null);
+  const [contentLoading, setContentLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [fileInput, setFileInput] = useState<File | null>(null);
 
@@ -89,6 +92,20 @@ export default function AdminClient() {
     setUploading(false);
   }
 
+  async function viewFile(file: { id: string; filename?: string }) {
+    setViewingFile(file);
+    setFileContent(null);
+    setContentLoading(true);
+    const res = await fetch(`/api/admin/files?id=${encodeURIComponent(file.id)}`);
+    if (!res.ok) {
+      setFileContent("[Error loading file content]");
+    } else {
+      const data = await res.json();
+      setFileContent(data.content ?? "[No content returned]");
+    }
+    setContentLoading(false);
+  }
+
   async function deleteFile(fileId: string) {
     setDeleting(fileId);
     setFilesMessage(null);
@@ -157,7 +174,13 @@ export default function AdminClient() {
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           {files.map((f) => (
             <div key={f.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,240,210,0.5)", borderRadius: 10, padding: "8px 12px", border: "1px solid rgba(170,96,38,0.2)" }}>
-              <small style={{ wordBreak: "break-all" }}>{f.filename || f.id}</small>
+              <button
+                type="button"
+                onClick={() => viewFile(f)}
+                style={{ background: "none", border: "none", padding: 0, cursor: "pointer", textAlign: "left", fontSize: 12, color: "var(--clay-700)", textDecoration: "underline", wordBreak: "break-all", flex: 1 }}
+              >
+                {f.filename || f.id}
+              </button>
               <button
                 className="link-button"
                 type="button"
@@ -169,6 +192,24 @@ export default function AdminClient() {
               </button>
             </div>
           ))}
+        </div>
+      )}
+
+      {viewingFile && (
+        <div className="file-modal-overlay" onClick={() => setViewingFile(null)}>
+          <div className="file-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="file-modal-header">
+              <strong style={{ fontSize: 14 }}>{viewingFile.filename || viewingFile.id}</strong>
+              <button className="link-button" type="button" onClick={() => setViewingFile(null)}>Close</button>
+            </div>
+            <div className="file-modal-body">
+              {contentLoading ? (
+                <small>Loading...</small>
+              ) : (
+                <pre className="file-modal-pre">{fileContent}</pre>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </div>

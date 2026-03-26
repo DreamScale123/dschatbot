@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAdminFromCookies } from "@/lib/auth";
 
-export async function GET() {
+export async function GET(req: Request) {
   if (!isAdminFromCookies()) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -11,6 +11,23 @@ export async function GET() {
 
   if (!apiKey || !vectorStoreId) {
     return NextResponse.json({ files: [] });
+  }
+
+  // ?id=fileId → return that file's text content
+  const fileId = new URL(req.url).searchParams.get("id");
+  if (fileId) {
+    const contentRes = await fetch(`https://api.openai.com/v1/files/${fileId}/content`, {
+      headers: { Authorization: `Bearer ${apiKey}` }
+    });
+    if (!contentRes.ok) {
+      return NextResponse.json({ error: "Could not retrieve file content" }, { status: 500 });
+    }
+    const contentType = contentRes.headers.get("content-type") || "";
+    if (!contentType.includes("text") && !contentType.includes("json")) {
+      return NextResponse.json({ content: "[Binary file — content cannot be displayed as text]" });
+    }
+    const content = await contentRes.text();
+    return NextResponse.json({ content });
   }
 
   const res = await fetch(`https://api.openai.com/v1/vector_stores/${vectorStoreId}/files`, {
