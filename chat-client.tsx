@@ -162,56 +162,49 @@ export default function ChatClient() {
                 <span className="dot" style={{ animationDelay: "0.3s" }} />
                 <span className="dot" style={{ animationDelay: "0.6s" }} />
               </div>
-              <svg viewBox="0 0 130 96" width="114" height="84" aria-hidden="true">
-                {/* Beard spikes — the defining beardie feature, spread wide */}
-                <polygon points="19,96 29,74 39,96" fill="#bf7030"/>
-                <polygon points="34,96 44,74 54,96" fill="#c97a3f"/>
-                <polygon points="49,96 59,74 69,96" fill="#bf7030"/>
-                <polygon points="64,96 74,74 84,96" fill="#c97a3f"/>
-                <polygon points="79,96 89,74 99,96" fill="#bf7030"/>
-                {/* Chin/gular base connecting beard to head */}
-                <ellipse cx="59" cy="74" rx="39" ry="7" fill="#d4892e"/>
+              <svg viewBox="0 0 100 92" width="100" height="92" aria-hidden="true">
+                {/* Beard — single continuous zigzag, THE defining beardie feature */}
+                <path d="M 10,65 L 90,65 L 93,71 L 88,92 L 82,72 L 76,92 L 70,72 L 64,92 L 58,72 L 52,92 L 46,72 L 40,92 L 34,72 L 28,92 L 22,72 L 16,92 L 7,71 Z" fill="#c97a3f"/>
                 {/* Left cheek spines */}
-                <polygon points="8,42 27,48 10,56" fill="#c97a3f"/>
-                <polygon points="7,56 27,59 9,66" fill="#bf7030"/>
+                <polygon points="0,30 16,35 1,43" fill="#c97a3f"/>
+                <polygon points="0,45 16,50 1,58" fill="#bf7030"/>
                 {/* Right cheek spines */}
-                <polygon points="122,42 103,48 120,56" fill="#c97a3f"/>
-                <polygon points="123,56 103,59 121,66" fill="#bf7030"/>
-                {/* Main head — wide trapezoid shape, distinctly beardie */}
-                <path d="M 21,68 Q 11,53 17,30 Q 24,13 60,11 Q 96,13 103,30 Q 109,53 99,68 Q 81,79 60,80 Q 39,79 21,68 Z" fill="#e8953a"/>
-                {/* Top-of-head spines */}
-                <polygon points="44,12 48,4 52,12" fill="#d4852e"/>
-                <polygon points="56,11 60,3 64,11" fill="#d4852e"/>
-                <polygon points="68,12 72,4 76,12" fill="#d4852e"/>
-                {/* Brow ridges — very prominent on real beardies */}
-                <path d="M 22,33 Q 34,24 47,31" stroke="#c97a3f" strokeWidth="4" fill="none" strokeLinecap="round"/>
-                <path d="M 73,31 Q 86,24 98,33" stroke="#c97a3f" strokeWidth="4" fill="none" strokeLinecap="round"/>
+                <polygon points="100,30 84,35 99,43" fill="#c97a3f"/>
+                <polygon points="100,45 84,50 99,58" fill="#bf7030"/>
+                {/* Head — smooth bezier path, wide beardie silhouette */}
+                <path d="M 50,5 Q 75,8 92,25 Q 96,40 86,56 L 68,65 Q 50,70 32,65 L 14,56 Q 4,40 8,25 Q 25,8 50,5 Z" fill="#e8953a"/>
+                {/* Top spines */}
+                <polygon points="40,5 44,0 48,5" fill="#d4852e"/>
+                <polygon points="52,5 56,0 60,5" fill="#d4852e"/>
+                {/* Brow ridges */}
+                <path d="M 17,30 Q 28,22 40,29" stroke="#c97a3f" strokeWidth="3.5" fill="none" strokeLinecap="round"/>
+                <path d="M 60,29 Q 72,22 83,30" stroke="#c97a3f" strokeWidth="3.5" fill="none" strokeLinecap="round"/>
                 {/* Eye sockets */}
-                <circle cx="35" cy="41" r="13" fill="#c97a3f" opacity="0.35"/>
-                <circle cx="85" cy="41" r="13" fill="#c97a3f" opacity="0.35"/>
-                {/* Eyes — large, cream-white */}
-                <circle cx="35" cy="41" r="10.5" fill="#fffef0"/>
-                <circle cx="85" cy="41" r="10.5" fill="#fffef0"/>
-                {/* Iris — golden amber like a real beardie */}
-                <circle cx="35" cy="42" r="7" fill="#d4820a"/>
-                <circle cx="85" cy="42" r="7" fill="#d4820a"/>
-                {/* Pupils — slightly oval/vertical */}
-                <ellipse cx="35" cy="42" rx="3.2" ry="4.5" fill="#0a0503"/>
-                <ellipse cx="85" cy="42" rx="3.2" ry="4.5" fill="#0a0503"/>
+                <circle cx="28" cy="37" r="12" fill="#d4852e" opacity="0.4"/>
+                <circle cx="72" cy="37" r="12" fill="#d4852e" opacity="0.4"/>
+                {/* Eyes */}
+                <circle cx="28" cy="37" r="9.5" fill="#fffef0"/>
+                <circle cx="72" cy="37" r="9.5" fill="#fffef0"/>
+                {/* Iris — golden amber */}
+                <circle cx="28" cy="38" r="6" fill="#cc7800"/>
+                <circle cx="72" cy="38" r="6" fill="#cc7800"/>
+                {/* Pupils — slightly oval */}
+                <ellipse cx="28" cy="38" rx="2.8" ry="3.8" fill="#0d0500"/>
+                <ellipse cx="72" cy="38" rx="2.8" ry="3.8" fill="#0d0500"/>
                 {/* Eye shine */}
-                <circle cx="37.5" cy="39" r="2.2" fill="white"/>
-                <circle cx="87.5" cy="39" r="2.2" fill="white"/>
-                {/* Snout — wide and flat */}
-                <ellipse cx="60" cy="58" rx="18" ry="12" fill="#d4852e" opacity="0.5"/>
+                <circle cx="30" cy="35" r="2" fill="white"/>
+                <circle cx="74" cy="35" r="2" fill="white"/>
+                {/* Snout */}
+                <ellipse cx="50" cy="53" rx="15" ry="10" fill="#d4852e" opacity="0.55"/>
                 {/* Nostrils */}
-                <ellipse cx="53" cy="53" rx="3" ry="2.5" fill="#7b4b24"/>
-                <ellipse cx="67" cy="53" rx="3" ry="2.5" fill="#7b4b24"/>
-                {/* Mouth — beardies have a characteristic slight upward curve */}
-                <path d="M 43,65 Q 52,70 60,71 Q 68,70 77,65" stroke="#7b4b24" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
-                {/* Scale texture dots */}
-                <circle cx="60" cy="26" r="2.5" fill="#d4852e" opacity="0.5"/>
-                <circle cx="50" cy="30" r="1.8" fill="#d4852e" opacity="0.4"/>
-                <circle cx="70" cy="30" r="1.8" fill="#d4852e" opacity="0.4"/>
+                <circle cx="44" cy="49" r="2.5" fill="#7b4b24"/>
+                <circle cx="56" cy="49" r="2.5" fill="#7b4b24"/>
+                {/* Mouth — beardies naturally look like they're smiling */}
+                <path d="M 35,61 Q 50,69 65,61" stroke="#7b4b24" strokeWidth="2.2" fill="none" strokeLinecap="round"/>
+                {/* Scale dots */}
+                <circle cx="50" cy="22" r="2.5" fill="#d4852e" opacity="0.5"/>
+                <circle cx="42" cy="26" r="2" fill="#d4852e" opacity="0.4"/>
+                <circle cx="58" cy="26" r="2" fill="#d4852e" opacity="0.4"/>
               </svg>
             </div>
           )}
