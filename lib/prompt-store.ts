@@ -1,4 +1,5 @@
-// Falls back to SYSTEM_PROMPT env var, then a hardcoded default
+import { createClient } from "@vercel/kv";
+
 function getDefaultPrompt(): string {
   return (
     process.env.SYSTEM_PROMPT ||
@@ -13,10 +14,17 @@ const PROMPT_KEY = "system_prompt";
 
 let memoryPrompt: string | null = null;
 
-async function kvAvailable(): Promise<boolean> {
-  if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) return false;
+function getKv() {
+  const url = process.env.DS_KV_URL;
+  const token = process.env.DS_KV_TOKEN;
+  if (!url || !token) return null;
+  return createClient({ url, token });
+}
+
+export async function isKvAvailable(): Promise<boolean> {
+  const kv = getKv();
+  if (!kv) return false;
   try {
-    const { kv } = await import("@vercel/kv");
     await kv.ping();
     return true;
   } catch {
@@ -25,9 +33,9 @@ async function kvAvailable(): Promise<boolean> {
 }
 
 export async function getSystemPrompt(): Promise<string> {
-  if (await kvAvailable()) {
+  const kv = getKv();
+  if (kv) {
     try {
-      const { kv } = await import("@vercel/kv");
       const stored = await kv.get<string>(PROMPT_KEY);
       return stored || getDefaultPrompt();
     } catch {}
@@ -37,14 +45,10 @@ export async function getSystemPrompt(): Promise<string> {
 
 export async function setSystemPrompt(prompt: string): Promise<void> {
   memoryPrompt = prompt;
-  if (await kvAvailable()) {
+  const kv = getKv();
+  if (kv) {
     try {
-      const { kv } = await import("@vercel/kv");
       await kv.set(PROMPT_KEY, prompt);
     } catch {}
   }
-}
-
-export async function isKvAvailable(): Promise<boolean> {
-  return kvAvailable();
 }
