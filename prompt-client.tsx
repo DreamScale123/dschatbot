@@ -9,7 +9,8 @@ export default function AdminClient() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [files, setFiles] = useState<Array<{ id: string }>>([]);
+  const [files, setFiles] = useState<Array<{ id: string; filename?: string }>>([]);
+  const [deleting, setDeleting] = useState<string | null>(null);
   const [filesMessage, setFilesMessage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [fileInput, setFileInput] = useState<File | null>(null);
@@ -88,6 +89,25 @@ export default function AdminClient() {
     setUploading(false);
   }
 
+  async function deleteFile(fileId: string) {
+    setDeleting(fileId);
+    setFilesMessage(null);
+    const res = await fetch("/api/admin/files", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fileId })
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setFilesMessage(data.error || "Delete failed.");
+      setDeleting(null);
+      return;
+    }
+    await loadFiles();
+    setFilesMessage("Deleted.");
+    setDeleting(null);
+  }
+
   return (
     <div className="form-card">
       <div className="top-actions">
@@ -134,7 +154,22 @@ export default function AdminClient() {
       </form>
 
       {files.length > 0 && (
-        <small>Uploaded files: {files.map((f) => f.id).join(", ")}</small>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          {files.map((f) => (
+            <div key={f.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,240,210,0.5)", borderRadius: 10, padding: "8px 12px", border: "1px solid rgba(170,96,38,0.2)" }}>
+              <small style={{ wordBreak: "break-all" }}>{f.filename || f.id}</small>
+              <button
+                className="link-button"
+                type="button"
+                onClick={() => deleteFile(f.id)}
+                disabled={deleting === f.id}
+                style={{ marginLeft: 12, flexShrink: 0, color: "#c0392b", borderColor: "rgba(192,57,43,0.4)" }}
+              >
+                {deleting === f.id ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

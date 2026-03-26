@@ -82,3 +82,40 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ ok: true, fileId });
 }
+
+export async function DELETE(req: Request) {
+  if (!isAdminFromCookies()) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const apiKey = process.env.OPENAI_API_KEY;
+  const vectorStoreId = process.env.OPENAI_VECTOR_STORE_ID;
+
+  if (!apiKey || !vectorStoreId) {
+    return NextResponse.json({ error: "Vector store not configured" }, { status: 500 });
+  }
+
+  const { fileId } = await req.json().catch(() => ({})) as { fileId?: string };
+  if (!fileId) {
+    return NextResponse.json({ error: "fileId required" }, { status: 400 });
+  }
+
+  // Remove from vector store
+  const vsRes = await fetch(`https://api.openai.com/v1/vector_stores/${vectorStoreId}/files/${fileId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${apiKey}`, "OpenAI-Beta": "assistants=v2" }
+  });
+
+  if (!vsRes.ok) {
+    const err = await vsRes.json().catch(() => ({}));
+    return NextResponse.json({ error: (err as { error?: { message?: string } }).error?.message || "Failed to remove from vector store" }, { status: 500 });
+  }
+
+  // Delete the underlying file object
+  await fetch(`https://api.openai.com/v1/files/${fileId}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${apiKey}` }
+  });
+
+  return NextResponse.json({ ok: true });
+}
