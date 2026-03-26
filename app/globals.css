@@ -1,17 +1,18 @@
 @import url("https://fonts.googleapis.com/css2?family=Fjalla+One&family=Work+Sans:wght@300;400;500;600;700&display=swap");
 
 :root {
-  --sand-100: #fff1d6;
-  --sand-200: #f9d49c;
-  --sand-300: #f3b86f;
-  --clay-500: #c97a3f;
-  --clay-700: #7b4b24;
-  --night-900: #1a1009;
-  --night-800: #2c1a0f;
+  --hue: 25;
+  --sand-100: hsl(var(--hue), 100%, 92%);
+  --sand-200: hsl(var(--hue), 89%, 80%);
+  --sand-300: hsl(var(--hue), 85%, 70%);
+  --clay-500: hsl(var(--hue), 57%, 51%);
+  --clay-700: hsl(var(--hue), 54%, 31%);
+  --night-900: hsl(var(--hue), 30%, 8%);
+  --night-800: hsl(var(--hue), 30%, 12%);
+  --ink: hsl(var(--hue), 40%, 8%);
   --cactus: #2c6e5b;
   --water: #5dd6ff;
   --ember: #ff6b6b;
-  --ink: #1b120c;
 }
 
 * {
@@ -24,7 +25,13 @@ body {
   margin: 0;
   font-family: "Work Sans", system-ui, -apple-system, sans-serif;
   color: var(--night-900);
-  background: radial-gradient(circle at top, #fbe7c1 0%, #f5c479 35%, #e89c55 70%, #ca6b33 100%);
+  background: radial-gradient(
+    circle at top,
+    hsl(var(--hue), 88%, 87%) 0%,
+    hsl(var(--hue), 89%, 72%) 35%,
+    hsl(var(--hue), 77%, 62%) 70%,
+    hsl(var(--hue), 63%, 48%) 100%
+  );
   min-height: 100%;
 }
 
@@ -44,11 +51,11 @@ main {
 /* Card shell */
 .shell {
   width: min(540px, 100%);
-  background: rgba(255, 248, 234, 0.92);
+  background: hsla(var(--hue), 60%, 96%, 0.92);
   border-radius: 24px;
   padding: 32px;
-  box-shadow: 0 24px 64px rgba(93, 47, 18, 0.32);
-  border: 1px solid rgba(170, 96, 38, 0.22);
+  box-shadow: 0 24px 64px hsla(var(--hue), 67%, 22%, 0.32);
+  border: 1px solid hsla(var(--hue), 63%, 41%, 0.22);
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -88,8 +95,8 @@ main {
 .form-card input[type="file"] {
   padding: 10px 14px;
   border-radius: 12px;
-  border: 1px solid rgba(170, 96, 38, 0.35);
-  background: rgba(255, 240, 210, 0.5);
+  border: 1px solid hsla(var(--hue), 63%, 41%, 0.35);
+  background: hsla(var(--hue), 100%, 91%, 0.5);
   font-size: 15px;
   font-family: inherit;
   color: var(--night-900);
@@ -99,7 +106,7 @@ main {
 
 .form-card input:focus {
   border-color: var(--clay-500);
-  background: rgba(255, 245, 220, 0.8);
+  background: hsla(var(--hue), 100%, 94%, 0.8);
 }
 
 /* Admin textarea */
@@ -108,8 +115,8 @@ main {
   min-height: 200px;
   padding: 12px 14px;
   border-radius: 12px;
-  border: 1px solid rgba(170, 96, 38, 0.35);
-  background: rgba(255, 240, 210, 0.5);
+  border: 1px solid hsla(var(--hue), 63%, 41%, 0.35);
+  background: hsla(var(--hue), 100%, 91%, 0.5);
   font-size: 14px;
   font-family: inherit;
   color: var(--night-900);
@@ -148,7 +155,7 @@ button:hover:not(:disabled) {
 
 .link-button {
   background: transparent;
-  border: 1px solid rgba(123, 75, 36, 0.4);
+  border: 1px solid hsla(var(--hue), 54%, 31%, 0.4);
   color: var(--clay-700);
   font-weight: 600;
   text-transform: none;
@@ -163,11 +170,11 @@ button:hover:not(:disabled) {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: rgba(255, 248, 234, 0.92);
+  background: hsla(var(--hue), 60%, 96%, 0.92);
   border-radius: 24px;
   padding: 24px;
-  box-shadow: 0 24px 64px rgba(93, 47, 18, 0.32);
-  border: 1px solid rgba(170, 96, 38, 0.22);
+  box-shadow: 0 24px 64px hsla(var(--hue), 67%, 22%, 0.32);
+  border: 1px solid hsla(var(--hue), 63%, 41%, 0.22);
 }
 
 .top-actions {
@@ -203,15 +210,15 @@ button:hover:not(:disabled) {
 }
 
 .message.user {
-  background: rgba(201, 122, 63, 0.15);
-  border: 1px solid rgba(201, 122, 63, 0.25);
+  background: hsla(var(--hue), 57%, 51%, 0.15);
+  border: 1px solid hsla(var(--hue), 57%, 51%, 0.25);
   align-self: flex-end;
   max-width: 85%;
 }
 
 .message.assistant {
-  background: rgba(255, 240, 210, 0.7);
-  border: 1px solid rgba(170, 96, 38, 0.2);
+  background: hsla(var(--hue), 100%, 91%, 0.7);
+  border: 1px solid hsla(var(--hue), 63%, 41%, 0.2);
   align-self: flex-start;
   max-width: 90%;
 }
@@ -226,8 +233,8 @@ button:hover:not(:disabled) {
   flex: 1;
   padding: 10px 14px;
   border-radius: 14px;
-  border: 1px solid rgba(170, 96, 38, 0.35);
-  background: rgba(255, 240, 210, 0.5);
+  border: 1px solid hsla(var(--hue), 63%, 41%, 0.35);
+  background: hsla(var(--hue), 100%, 91%, 0.5);
   font-size: 14px;
   font-family: inherit;
   color: var(--night-900);
@@ -246,11 +253,46 @@ small {
   color: var(--clay-700);
 }
 
+/* Admin tabs */
+.admin-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid hsla(var(--hue), 63%, 41%, 0.2);
+  padding-bottom: 0;
+  margin-bottom: 4px;
+}
+
+.admin-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  padding: 8px 18px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--clay-700);
+  text-transform: none;
+  letter-spacing: 0;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  margin-bottom: -1px;
+}
+
+.admin-tab:hover:not(:disabled) {
+  opacity: 1;
+  color: var(--clay-500);
+}
+
+.admin-tab.active {
+  border-bottom-color: var(--clay-500);
+  color: var(--night-800);
+}
+
 /* ── File preview modal ────────────────────────────────────── */
 .file-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(26, 16, 9, 0.55);
+  background: hsla(var(--hue), 49%, 7%, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -259,10 +301,10 @@ small {
 }
 
 .file-modal {
-  background: #fff8ea;
+  background: hsl(var(--hue), 100%, 97%);
   border-radius: 18px;
-  border: 1px solid rgba(170, 96, 38, 0.25);
-  box-shadow: 0 24px 64px rgba(93, 47, 18, 0.3);
+  border: 1px solid hsla(var(--hue), 63%, 41%, 0.25);
+  box-shadow: 0 24px 64px hsla(var(--hue), 67%, 22%, 0.3);
   width: min(720px, 100%);
   max-height: 80vh;
   display: flex;
@@ -275,7 +317,7 @@ small {
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  border-bottom: 1px solid rgba(170, 96, 38, 0.15);
+  border-bottom: 1px solid hsla(var(--hue), 63%, 41%, 0.15);
   gap: 12px;
 }
 
@@ -316,12 +358,11 @@ small {
   display: flex;
   gap: 5px;
   align-items: center;
-  box-shadow: 0 2px 14px rgba(93, 47, 18, 0.18);
-  border: 1.5px solid rgba(170, 96, 38, 0.2);
+  box-shadow: 0 2px 14px hsla(var(--hue), 67%, 22%, 0.18);
+  border: 1.5px solid hsla(var(--hue), 63%, 41%, 0.2);
   margin-bottom: 8px;
 }
 
-/* thought-bubble tail circles */
 .dragon-bubble::before {
   content: '';
   position: absolute;
@@ -332,7 +373,7 @@ small {
   height: 7px;
   background: white;
   border-radius: 50%;
-  border: 1.5px solid rgba(170, 96, 38, 0.2);
+  border: 1.5px solid hsla(var(--hue), 63%, 41%, 0.2);
 }
 
 .dragon-bubble::after {
@@ -345,7 +386,7 @@ small {
   height: 4px;
   background: white;
   border-radius: 50%;
-  border: 1.5px solid rgba(170, 96, 38, 0.2);
+  border: 1.5px solid hsla(var(--hue), 63%, 41%, 0.2);
 }
 
 .dragon-bubble .dot {
