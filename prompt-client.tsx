@@ -322,7 +322,16 @@ export default function AdminClient() {
               {contentLoading ? (
                 <small>Loading...</small>
               ) : (
-                <pre className="file-modal-pre">{fileContent}</pre>
+                <>
+                  <a
+                    href={`/api/admin/files/download?id=${encodeURIComponent(viewingFile.id)}&name=${encodeURIComponent(viewingFile.filename || viewingFile.id)}`}
+                    download={viewingFile.filename || viewingFile.id}
+                    style={{ fontSize: 13, color: "var(--clay-700)", textDecoration: "underline", marginBottom: 10, display: "inline-block" }}
+                  >
+                    Download file
+                  </a>
+                  <pre className="file-modal-pre">{fileContent}</pre>
+                </>
               )}
             </div>
           </div>
