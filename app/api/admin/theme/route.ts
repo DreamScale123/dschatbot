@@ -1,21 +1,14 @@
 import { NextResponse } from "next/server";
 import { isAdminFromCookies } from "@/lib/auth";
 import { getAppTheme, setAppTheme } from "@/lib/theme-store";
-
-const COOKIE_OPTS = {
-  httpOnly: false,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax" as const,
-  path: "/",
-  maxAge: 60 * 60 * 24 * 365,
-};
+import { isConfigured } from "@/lib/kv";
 
 export async function GET() {
   if (!isAdminFromCookies()) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const theme = await getAppTheme();
-  return NextResponse.json(theme);
+  return NextResponse.json({ ...theme, kvAvailable: isConfigured() });
 }
 
 export async function POST(req: Request) {
@@ -24,7 +17,5 @@ export async function POST(req: Request) {
   }
   const body = await req.json().catch(() => ({}));
   const updated = await setAppTheme(body);
-  const res = NextResponse.json({ ok: true });
-  res.cookies.set("ds_theme", JSON.stringify(updated), COOKIE_OPTS);
-  return res;
+  return NextResponse.json({ ok: true, kvAvailable: isConfigured(), hue: updated.hue });
 }

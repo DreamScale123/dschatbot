@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import "./globals.css";
-import { DEFAULT_THEME } from "@/lib/theme-store";
+import { getAppTheme } from "@/lib/theme-store";
 
 export const metadata: Metadata = {
   title: "Beardie Care Guide",
@@ -13,17 +12,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  let hue = DEFAULT_THEME.hue;
-  try {
-    const c = cookies().get("ds_theme");
-    if (c?.value) {
-      const parsed = JSON.parse(c.value);
-      if (typeof parsed.hue === "number") hue = parsed.hue;
-    }
-  } catch {}
+  const theme = await getAppTheme();
 
   return (
-    <html lang="en" style={{ "--hue": String(hue) } as React.CSSProperties}>
+    <html lang="en" style={{ "--hue": String(theme.hue) } as React.CSSProperties}>
       <body>{children}</body>
     </html>
   );

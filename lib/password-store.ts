@@ -1,52 +1,26 @@
-import { createClient } from "@vercel/kv";
+import * as kv from "./kv";
 
-const MEMBER_PW_KEY = "member_password";
-const ADMIN_PW_KEY = "admin_password";
-
-let memoryMemberPw: string | null = null;
-let memoryAdminPw: string | null = null;
-
-function getKv() {
-  const url = process.env.DS_KV_URL;
-  const token = process.env.DS_KV_TOKEN;
-  if (!url || !token) return null;
-  return createClient({ url, token });
-}
+const MEMBER_KEY = "member_password";
+const ADMIN_KEY = "admin_password";
+let memMember: string | null = null;
+let memAdmin: string | null = null;
 
 export async function getMemberPassword(): Promise<string> {
-  const kv = getKv();
-  if (kv) {
-    try {
-      const stored = await kv.get<string>(MEMBER_PW_KEY);
-      if (stored) return stored;
-    } catch {}
-  }
-  return memoryMemberPw || process.env.MEMBER_PASSWORD || "";
+  const stored = await kv.get<string>(MEMBER_KEY);
+  return stored ?? memMember ?? process.env.MEMBER_PASSWORD ?? "";
 }
 
 export async function getAdminPassword(): Promise<string> {
-  const kv = getKv();
-  if (kv) {
-    try {
-      const stored = await kv.get<string>(ADMIN_PW_KEY);
-      if (stored) return stored;
-    } catch {}
-  }
-  return memoryAdminPw || process.env.ADMIN_PASSWORD || "";
+  const stored = await kv.get<string>(ADMIN_KEY);
+  return stored ?? memAdmin ?? process.env.ADMIN_PASSWORD ?? "";
 }
 
 export async function setMemberPassword(pw: string): Promise<void> {
-  memoryMemberPw = pw;
-  const kv = getKv();
-  if (kv) {
-    try { await kv.set(MEMBER_PW_KEY, pw); } catch {}
-  }
+  memMember = pw;
+  await kv.set(MEMBER_KEY, pw);
 }
 
 export async function setAdminPassword(pw: string): Promise<void> {
-  memoryAdminPw = pw;
-  const kv = getKv();
-  if (kv) {
-    try { await kv.set(ADMIN_PW_KEY, pw); } catch {}
-  }
+  memAdmin = pw;
+  await kv.set(ADMIN_KEY, pw);
 }

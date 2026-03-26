@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAdminFromCookies } from "@/lib/auth";
+import { isConfigured, ping } from "@/lib/kv";
 
 export async function GET() {
   if (!isAdminFromCookies()) {
@@ -8,25 +9,14 @@ export async function GET() {
 
   const url = process.env.DS_KV_URL;
   const token = process.env.DS_KV_TOKEN;
+  const configured = isConfigured();
+  const pingOk = configured ? await ping() : false;
 
-  const result: Record<string, unknown> = {
+  return NextResponse.json({
     DS_KV_URL_set: !!url,
-    DS_KV_URL_preview: url ? url.slice(0, 30) + "..." : null,
+    DS_KV_URL_preview: url ? url.slice(0, 35) + "..." : null,
     DS_KV_TOKEN_set: !!token,
-    pingResult: null,
-    pingError: null,
-  };
-
-  if (url && token) {
-    try {
-      const { createClient } = await import("@vercel/kv");
-      const kv = createClient({ url, token });
-      await kv.ping();
-      result.pingResult = "OK";
-    } catch (e) {
-      result.pingError = String(e);
-    }
-  }
-
-  return NextResponse.json(result);
+    configured,
+    pingOk,
+  });
 }

@@ -2,14 +2,6 @@ import { NextResponse } from "next/server";
 import { isAdminFromCookies } from "@/lib/auth";
 import { getModel, setModel, isKvAvailable } from "@/lib/model-store";
 
-const COOKIE_OPTS = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "lax" as const,
-  path: "/",
-  maxAge: 60 * 60 * 24 * 365,
-};
-
 export async function GET() {
   if (!isAdminFromCookies()) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -29,7 +21,5 @@ export async function POST(req: Request) {
   }
   await setModel(model.trim());
   const kvOk = await isKvAvailable();
-  const res = NextResponse.json({ ok: true, kvAvailable: kvOk });
-  res.cookies.set("ds_model", model.trim(), COOKIE_OPTS);
-  return res;
+  return NextResponse.json({ ok: true, kvAvailable: kvOk });
 }
