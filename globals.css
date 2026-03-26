@@ -1,0 +1,238 @@
+@import url("https://fonts.googleapis.com/css2?family=Fjalla+One&family=Work+Sans:wght@300;400;500;600;700&display=swap");
+
+:root {
+  --sand-100: #fff1d6;
+  --sand-200: #f9d49c;
+  --sand-300: #f3b86f;
+  --clay-500: #c97a3f;
+  --clay-700: #7b4b24;
+  --night-900: #1a1009;
+  --night-800: #2c1a0f;
+  --cactus: #2c6e5b;
+  --water: #5dd6ff;
+  --ember: #ff6b6b;
+  --ink: #1b120c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: "Work Sans", "Fjalla One", system-ui, -apple-system, sans-serif;
+  color: var(--night-900);
+  background: radial-gradient(circle at top, #fbe7c1 0%, #f5c479 35%, #e89c55 70%, #ca6b33 100%);
+  min-height: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+main {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px 50px;
+}
+
+.game-page {
+  background: radial-gradient(circle at 15% 15%, rgba(255, 247, 214, 0.6), transparent 45%),
+    radial-gradient(circle at 70% 0%, rgba(255, 196, 132, 0.55), transparent 55%),
+    linear-gradient(180deg, rgba(255, 236, 201, 0.6) 0%, rgba(200, 90, 30, 0.6) 100%);
+}
+
+.game-shell {
+  width: min(1100px, 100%);
+  background: rgba(255, 248, 234, 0.88);
+  border-radius: 28px;
+  padding: 28px;
+  box-shadow: 0 30px 80px rgba(93, 47, 18, 0.35);
+  border: 1px solid rgba(170, 96, 38, 0.25);
+}
+
+.game-header {
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.game-kicker {
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--clay-700);
+  margin: 0 0 8px;
+}
+
+h1 {
+  font-family: "Fjalla One", "Work Sans", sans-serif;
+  font-size: 38px;
+  margin: 0 0 8px;
+  letter-spacing: 1px;
+  color: var(--night-800);
+}
+
+.game-subtitle {
+  margin: 0;
+  color: var(--clay-700);
+  max-width: 520px;
+  line-height: 1.5;
+}
+
+.game-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(80px, 1fr));
+  gap: 12px;
+  background: rgba(255, 237, 207, 0.9);
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(199, 122, 63, 0.3);
+}
+
+.game-stats div {
+  display: grid;
+  gap: 4px;
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--clay-700);
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--night-900);
+}
+
+.game-stage {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 22px;
+  align-items: stretch;
+}
+
+.game-canvas-wrap {
+  background: rgba(255, 239, 215, 0.9);
+  border-radius: 20px;
+  border: 1px solid rgba(199, 122, 63, 0.25);
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 360px;
+}
+
+canvas {
+  display: block;
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 2px rgba(191, 120, 56, 0.45);
+}
+
+.game-panel {
+  background: rgba(255, 247, 231, 0.95);
+  border-radius: 18px;
+  border: 1px solid rgba(173, 102, 46, 0.25);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.panel-title {
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--clay-700);
+  margin: 0;
+}
+
+.panel-list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--night-900);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.panel-message {
+  margin: 0;
+  font-weight: 600;
+  color: var(--night-900);
+  background: rgba(255, 224, 178, 0.7);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.panel-actions {
+  display: grid;
+  gap: 10px;
+}
+
+button {
+  background: linear-gradient(130deg, var(--sand-300), var(--clay-500));
+  border: none;
+  color: var(--ink);
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+button.ghost {
+  background: transparent;
+  border: 1px solid rgba(173, 102, 46, 0.6);
+  color: var(--night-900);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.panel-footer {
+  font-size: 13px;
+  color: var(--clay-700);
+  padding-top: 6px;
+  border-top: 1px dashed rgba(173, 102, 46, 0.35);
+}
+
+@media (max-width: 960px) {
+  .game-stage {
+    grid-template-columns: 1fr;
+  }
+
+  .game-panel {
+    order: -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .game-shell {
+    padding: 20px;
+  }
+
+  h1 {
+    font-size: 30px;
+  }
+
+  .game-stats {
+    width: 100%;
+  }
+}
