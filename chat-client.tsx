@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import type { AppTheme } from "@/lib/theme-store";
 import { DEFAULT_THEME } from "@/lib/theme-store";
@@ -111,6 +111,44 @@ export default function ChatClient() {
     router.push("/login");
   }
 
+  function renderMessageContent(msg: ChatMessage) {
+    if (msg.role !== "assistant") return msg.content;
+
+    const parts: ReactNode[] = [];
+    const pattern = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s<]+)/g;
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = pattern.exec(msg.content)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(msg.content.slice(lastIndex, match.index));
+      }
+
+      const label = match[1];
+      const markdownHref = match[2];
+      const plainHref = match[3];
+      const href = markdownHref || plainHref;
+
+      if (href) {
+        parts.push(
+          <a key={`${href}-${match.index}`} href={href} target="_blank" rel="noopener noreferrer">
+            {label || href}
+          </a>
+        );
+      }
+
+      lastIndex = pattern.lastIndex;
+    }
+
+    if (lastIndex < msg.content.length) {
+      parts.push(msg.content.slice(lastIndex));
+    }
+
+    return parts.length === 0
+      ? msg.content
+      : parts.map((part, index) => <Fragment key={`chunk-${index}`}>{part}</Fragment>);
+  }
+
   return (
     <div className="chat">
       <div className="header" style={{ marginBottom: 4 }}>
@@ -138,7 +176,7 @@ export default function ChatClient() {
         )}
         {messages.map((msg, idx) => (
           <div key={`${msg.role}-${idx}`} className={`message ${msg.role}`}>
-            {msg.content}
+            {renderMessageContent(msg)}
             {msg.imageDataUrl && (
               <div style={{ marginTop: 10 }}>
                 <img
