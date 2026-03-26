@@ -154,9 +154,37 @@ export default function ChatClient() {
           onKeyDown={handleKeyDown}
           placeholder="Ask about lighting, feeding, or health red flags..."
         />
-        <button onClick={sendMessage} disabled={loading}>
-          {loading ? "Thinking..." : "Send"}
-        </button>
+        <div style={{ position: "relative", overflow: "visible", zIndex: 1 }}>
+          {loading && (
+            <div className="dragon-wrap">
+              <div className="dragon-bubble">
+                <span className="dot" style={{ animationDelay: "0s" }} />
+                <span className="dot" style={{ animationDelay: "0.3s" }} />
+                <span className="dot" style={{ animationDelay: "0.6s" }} />
+              </div>
+              <svg viewBox="0 0 82 68" width="72" height="60" aria-hidden="true">
+                <polygon points="14,68 21,50 28,68" fill="#c97a3f"/>
+                <polygon points="26,68 33,50 40,68" fill="#bf7038"/>
+                <polygon points="38,68 45,50 52,68" fill="#c97a3f"/>
+                <polygon points="50,68 57,50 64,68" fill="#bf7038"/>
+                <ellipse cx="41" cy="40" rx="26" ry="22" fill="#e8953a"/>
+                <ellipse cx="41" cy="27" rx="17" ry="4" fill="#d4852e" opacity="0.35"/>
+                <circle cx="31" cy="36" r="7" fill="white"/>
+                <circle cx="51" cy="36" r="7" fill="white"/>
+                <circle cx="32" cy="37" r="4.5" fill="#1a1009"/>
+                <circle cx="52" cy="37" r="4.5" fill="#1a1009"/>
+                <circle cx="33.5" cy="35" r="1.8" fill="white"/>
+                <circle cx="53.5" cy="35" r="1.8" fill="white"/>
+                <ellipse cx="38" cy="44" rx="2" ry="1.5" fill="#c97a3f"/>
+                <ellipse cx="44" cy="44" rx="2" ry="1.5" fill="#c97a3f"/>
+                <path d="M 32 50 Q 41 57 50 50" stroke="#7b4b24" strokeWidth="2" fill="none" strokeLinecap="round"/>
+              </svg>
+            </div>
+          )}
+          <button onClick={sendMessage} disabled={loading} style={{ position: "relative", zIndex: 2 }}>
+            {loading ? "..." : "Send"}
+          </button>
+        </div>
       </div>
       <div className="input-row" style={{ alignItems: "center" }}>
         <input type="file" accept="image/*" onChange={handleImageChange} />

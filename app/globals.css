@@ -246,6 +246,78 @@ small {
   color: var(--clay-700);
 }
 
+/* ── Thinking dragon ───────────────────────────────────────── */
+.dragon-wrap {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: peek-up 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dragon-bubble {
+  position: relative;
+  background: white;
+  border-radius: 18px;
+  padding: 7px 13px;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  box-shadow: 0 2px 14px rgba(93, 47, 18, 0.18);
+  border: 1.5px solid rgba(170, 96, 38, 0.2);
+  margin-bottom: 8px;
+}
+
+/* thought-bubble tail circles */
+.dragon-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 7px;
+  height: 7px;
+  background: white;
+  border-radius: 50%;
+  border: 1.5px solid rgba(170, 96, 38, 0.2);
+}
+
+.dragon-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background: white;
+  border-radius: 50%;
+  border: 1.5px solid rgba(170, 96, 38, 0.2);
+}
+
+.dragon-bubble .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--clay-500);
+  animation: dot-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes peek-up {
+  0%   { transform: translateX(-50%) translateY(115%); }
+  65%  { transform: translateX(-50%) translateY(-7%); }
+  100% { transform: translateX(-50%) translateY(0%); }
+}
+
+@keyframes dot-pulse {
+  0%, 100% { opacity: 0.2; transform: scale(0.7); }
+  50%      { opacity: 1;   transform: scale(1); }
+}
+
 @media (max-width: 600px) {
   .shell,
   .chat {
