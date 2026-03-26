@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAuthedFromCookies } from "@/lib/auth";
 import { getSystemPrompt } from "@/lib/prompt-store";
+import { getModel } from "@/lib/model-store";
 import { EMERGENCY_NOTICE, needsEmergencyNotice } from "@/lib/guardrails";
 
 type ChatMessage = {
@@ -94,7 +95,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "OPENAI_API_KEY is not set" }, { status: 500 });
   }
 
-  const model = process.env.OPENAI_MODEL || "gpt-5.4-mini";
+  const model = await getModel();
   const vectorStoreId = process.env.OPENAI_VECTOR_STORE_ID;
 
   const temperature = process.env.OPENAI_TEMPERATURE;

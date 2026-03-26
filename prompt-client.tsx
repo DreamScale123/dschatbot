@@ -3,6 +3,27 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
+const OPENAI_MODELS = [
+  // GPT-5 series
+  { label: "GPT-5.4 Mini", value: "gpt-5.4-mini" },
+  // GPT-4.5 series
+  { label: "GPT-4.5", value: "gpt-4.5" },
+  { label: "GPT-4.5 Mini", value: "gpt-4.5-mini" },
+  // GPT-4.1 series
+  { label: "GPT-4.1", value: "gpt-4.1" },
+  { label: "GPT-4.1 Mini", value: "gpt-4.1-mini" },
+  { label: "GPT-4.1 Nano", value: "gpt-4.1-nano" },
+  // GPT-4o series
+  { label: "GPT-4o", value: "gpt-4o" },
+  { label: "GPT-4o Mini", value: "gpt-4o-mini" },
+  // o-series reasoning
+  { label: "o4 Mini", value: "o4-mini" },
+  { label: "o3", value: "o3" },
+  { label: "o3 Mini", value: "o3-mini" },
+  { label: "o1", value: "o1" },
+  { label: "o1 Mini", value: "o1-mini" },
+];
+
 export default function AdminClient() {
   const router = useRouter();
   const [prompt, setPrompt] = useState("");
@@ -17,6 +38,9 @@ export default function AdminClient() {
   const [contentLoading, setContentLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [fileInput, setFileInput] = useState<File | null>(null);
+  const [model, setModel] = useState("gpt-5.4-mini");
+  const [savingModel, setSavingModel] = useState(false);
+  const [modelMessage, setModelMessage] = useState<string | null>(null);
 
   async function loadPrompt() {
     setLoading(true);
@@ -42,9 +66,17 @@ export default function AdminClient() {
     setFilesMessage(null);
   }
 
+  async function loadModel() {
+    const res = await fetch("/api/admin/model");
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.model) setModel(data.model);
+  }
+
   useEffect(() => {
     loadPrompt();
     loadFiles();
+    loadModel();
   }, []);
 
   async function savePrompt() {
@@ -65,6 +97,23 @@ export default function AdminClient() {
 
     setMessage("Saved.");
     setSaving(false);
+  }
+
+  async function saveModel() {
+    setSavingModel(true);
+    setModelMessage(null);
+    const res = await fetch("/api/admin/model", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model })
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setModelMessage(data.error || "Save failed");
+    } else {
+      setModelMessage("Saved.");
+    }
+    setSavingModel(false);
   }
 
   async function logout() {
@@ -146,6 +195,49 @@ export default function AdminClient() {
         {saving ? "Saving..." : "Save Prompt"}
       </button>
       {message && <small>{message}</small>}
+
+      <hr style={{ borderColor: "rgba(105, 181, 255, 0.2)", width: "100%" }} />
+
+      <div className="header">
+        <div className="title" style={{ fontSize: 18 }}>
+          AI Model
+        </div>
+        <div className="subtitle">
+          Select the OpenAI model used for all chat responses.
+        </div>
+      </div>
+
+      <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+        <select
+          value={model}
+          onChange={(e) => setModel(e.target.value)}
+          style={{
+            flex: 1,
+            padding: "10px 14px",
+            borderRadius: 12,
+            border: "1px solid rgba(170, 96, 38, 0.35)",
+            background: "rgba(255, 240, 210, 0.5)",
+            fontSize: 15,
+            fontFamily: "inherit",
+            color: "var(--night-900)",
+            outline: "none",
+            cursor: "pointer"
+          }}
+        >
+          {OPENAI_MODELS.map((m) => (
+            <option key={m.value} value={m.value}>
+              {m.label}
+            </option>
+          ))}
+          {!OPENAI_MODELS.find((m) => m.value === model) && (
+            <option value={model}>{model}</option>
+          )}
+        </select>
+        <button onClick={saveModel} disabled={savingModel} style={{ flexShrink: 0 }}>
+          {savingModel ? "Saving..." : "Save Model"}
+        </button>
+      </div>
+      {modelMessage && <small>{modelMessage}</small>}
 
       <hr style={{ borderColor: "rgba(105, 181, 255, 0.2)", width: "100%" }} />
 
