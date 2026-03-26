@@ -20,14 +20,18 @@ export async function GET(req: Request) {
       headers: { Authorization: `Bearer ${apiKey}` }
     });
     if (!contentRes.ok) {
-      return NextResponse.json({ error: "Could not retrieve file content" }, { status: 500 });
+      const err = await contentRes.json().catch(() => ({}));
+      const msg = (err as { error?: { message?: string } }).error?.message || `OpenAI returned ${contentRes.status}`;
+      return NextResponse.json({ error: msg }, { status: 500 });
     }
-    const contentType = contentRes.headers.get("content-type") || "";
-    if (!contentType.includes("text") && !contentType.includes("json")) {
-      return NextResponse.json({ content: "[Binary file — content cannot be displayed as text]" });
+    // Try to read as text regardless of content-type; binary files will look garbled
+    const raw = await contentRes.text();
+    // Heuristic: if more than 10% non-printable chars it's likely binary
+    const nonPrintable = (raw.match(/[\x00-\x08\x0E-\x1F\x7F]/g) || []).length;
+    if (nonPrintable / raw.length > 0.1) {
+      return NextResponse.json({ content: "[Binary file — cannot display as text. Download the file to view it.]" });
     }
-    const content = await contentRes.text();
-    return NextResponse.json({ content });
+    return NextResponse.json({ content: raw });
   }
 
   const res = await fetch(`https://api.openai.com/v1/vector_stores/${vectorStoreId}/files`, {
