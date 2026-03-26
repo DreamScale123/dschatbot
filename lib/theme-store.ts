@@ -9,8 +9,6 @@ export type AppTheme = {
   accessLabel: string;
 };
 
-const THEME_KEY = "app_theme";
-
 export const DEFAULT_THEME: AppTheme = {
   hue: 25,
   appName: "Beardie Care Guide",
@@ -20,6 +18,7 @@ export const DEFAULT_THEME: AppTheme = {
   accessLabel: "Private members-only access",
 };
 
+const THEME_KEY = "app_theme";
 let memoryTheme: AppTheme | null = null;
 
 function getKv() {
@@ -30,6 +29,7 @@ function getKv() {
 }
 
 export async function getAppTheme(): Promise<AppTheme> {
+  // 1. KV
   const kv = getKv();
   if (kv) {
     try {
@@ -37,10 +37,17 @@ export async function getAppTheme(): Promise<AppTheme> {
       if (stored) return { ...DEFAULT_THEME, ...stored };
     } catch {}
   }
+  // 2. Cookie (server context only)
+  try {
+    const { cookies } = await import("next/headers");
+    const c = cookies().get("ds_theme");
+    if (c?.value) return { ...DEFAULT_THEME, ...(JSON.parse(c.value) as Partial<AppTheme>) };
+  } catch {}
+  // 3. Memory fallback
   return memoryTheme ? { ...DEFAULT_THEME, ...memoryTheme } : DEFAULT_THEME;
 }
 
-export async function setAppTheme(theme: Partial<AppTheme>): Promise<void> {
+export async function setAppTheme(theme: Partial<AppTheme>): Promise<AppTheme> {
   const current = await getAppTheme();
   const updated = { ...current, ...theme };
   memoryTheme = updated;
@@ -48,4 +55,5 @@ export async function setAppTheme(theme: Partial<AppTheme>): Promise<void> {
   if (kv) {
     try { await kv.set(THEME_KEY, updated); } catch {}
   }
+  return updated;
 }
