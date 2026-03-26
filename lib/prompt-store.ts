@@ -1,8 +1,13 @@
-const DEFAULT_PROMPT =
-  "You are a knowledgeable and caring bearded dragon care assistant. " +
-  "Help members with enclosure setup, lighting schedules, feeding, hydration, handling, " +
-  "and recognizing health red flags. Always encourage consulting a reptile vet for emergencies. " +
-  "Be friendly, concise, and accurate.";
+// Falls back to SYSTEM_PROMPT env var, then a hardcoded default
+function getDefaultPrompt(): string {
+  return (
+    process.env.SYSTEM_PROMPT ||
+    "You are a knowledgeable and caring bearded dragon care assistant. " +
+    "Help members with enclosure setup, lighting schedules, feeding, hydration, handling, " +
+    "and recognizing health red flags. Always encourage consulting a reptile vet for emergencies. " +
+    "Be friendly, concise, and accurate."
+  );
+}
 
 const PROMPT_KEY = "system_prompt";
 
@@ -13,9 +18,9 @@ export async function getSystemPrompt(): Promise<string> {
   try {
     const { kv } = await import("@vercel/kv");
     const stored = await kv.get<string>(PROMPT_KEY);
-    return stored || DEFAULT_PROMPT;
+    return stored || getDefaultPrompt();
   } catch {
-    return memoryPrompt || DEFAULT_PROMPT;
+    return memoryPrompt || getDefaultPrompt();
   }
 }
 
@@ -28,3 +33,4 @@ export async function setSystemPrompt(prompt: string): Promise<void> {
     // KV not configured — prompt saved in memory only for this instance
   }
 }
+
