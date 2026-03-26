@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Password required" }, { status: 400 });
   }
 
-  const role = validatePassword(password);
+  const role = await validatePassword(password);
   if (!role) {
     return NextResponse.json({ error: "Invalid password" }, { status: 401 });
   }

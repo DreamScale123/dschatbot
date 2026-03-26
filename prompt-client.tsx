@@ -41,6 +41,11 @@ export default function AdminClient() {
   const [savingModel, setSavingModel] = useState(false);
   const [modelMessage, setModelMessage] = useState<string | null>(null);
 
+  const [memberPw, setMemberPw] = useState("");
+  const [adminPw, setAdminPw] = useState("");
+  const [savingPw, setSavingPw] = useState<"member" | "admin" | null>(null);
+  const [pwMessage, setPwMessage] = useState<string | null>(null);
+
   async function loadPrompt() {
     setLoading(true);
     const res = await fetch("/api/admin/prompt");
@@ -123,6 +128,25 @@ export default function AdminClient() {
       setModelMessage(data.kvAvailable ? "Saved." : "Saved for this session only — connect Vercel KV to persist permanently.");
     }
     setSavingModel(false);
+  }
+
+  async function savePassword(type: "member" | "admin", password: string) {
+    setSavingPw(type);
+    setPwMessage(null);
+    const res = await fetch("/api/admin/passwords", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type, password })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setPwMessage(data.error || "Save failed");
+    } else {
+      setPwMessage(`${type === "member" ? "User" : "Admin"} password updated.`);
+      if (type === "member") setMemberPw("");
+      else setAdminPw("");
+    }
+    setSavingPw(null);
   }
 
   async function logout() {
@@ -310,6 +334,50 @@ export default function AdminClient() {
           ))}
         </div>
       )}
+
+      <hr style={{ borderColor: "rgba(105, 181, 255, 0.2)", width: "100%" }} />
+
+      <div className="header">
+        <div className="title" style={{ fontSize: 18 }}>Access Passwords</div>
+        <div className="subtitle">Change login passwords for members and admin.</div>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+          <input
+            type="password"
+            placeholder="New user password"
+            value={memberPw}
+            onChange={(e) => setMemberPw(e.target.value)}
+            style={{ flex: 1, padding: "10px 14px", borderRadius: 12, border: "1px solid rgba(170,96,38,0.35)", background: "rgba(255,240,210,0.5)", fontSize: 15, fontFamily: "inherit", outline: "none" }}
+          />
+          <button
+            onClick={() => savePassword("member", memberPw)}
+            disabled={savingPw === "member" || memberPw.trim().length < 4}
+            style={{ flexShrink: 0 }}
+          >
+            {savingPw === "member" ? "Saving..." : "Save User Password"}
+          </button>
+        </div>
+
+        <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+          <input
+            type="password"
+            placeholder="New admin password"
+            value={adminPw}
+            onChange={(e) => setAdminPw(e.target.value)}
+            style={{ flex: 1, padding: "10px 14px", borderRadius: 12, border: "1px solid rgba(170,96,38,0.35)", background: "rgba(255,240,210,0.5)", fontSize: 15, fontFamily: "inherit", outline: "none" }}
+          />
+          <button
+            onClick={() => savePassword("admin", adminPw)}
+            disabled={savingPw === "admin" || adminPw.trim().length < 4}
+            style={{ flexShrink: 0 }}
+          >
+            {savingPw === "admin" ? "Saving..." : "Save Admin Password"}
+          </button>
+        </div>
+      </div>
+      {pwMessage && <small>{pwMessage}</small>}
 
       {viewingFile && (
         <div className="file-modal-overlay" onClick={() => setViewingFile(null)}>

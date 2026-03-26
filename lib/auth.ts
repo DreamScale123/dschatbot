@@ -20,9 +20,9 @@ export function isAdminFromCookies(): boolean {
   return getRoleFromCookies() === "admin";
 }
 
-export function validatePassword(password: string): "member" | "admin" | null {
-  const memberPassword = process.env.MEMBER_PASSWORD || "";
-  const adminPassword = process.env.ADMIN_PASSWORD || "";
+export async function validatePassword(password: string): Promise<"member" | "admin" | null> {
+  const { getMemberPassword, getAdminPassword } = await import("@/lib/password-store");
+  const [memberPassword, adminPassword] = await Promise.all([getMemberPassword(), getAdminPassword()]);
   if (adminPassword && password === adminPassword) return "admin";
   if (memberPassword && password === memberPassword) return "member";
   return null;
