@@ -115,7 +115,7 @@ export default function ChatClient() {
     if (msg.role !== "assistant") return msg.content;
 
     const parts: ReactNode[] = [];
-    const pattern = /\[([^\]]+)\]\(([^)\s]+)\)|((?:https?:\/\/|www\.|(?:[a-z0-9-]+\.)+[a-z]{2,})[^\s<]*)/gi;
+    const pattern = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|(https?:\/\/[^\s<]+)/g;
     let lastIndex = 0;
     let match: RegExpExecArray | null;
 
@@ -127,20 +127,14 @@ export default function ChatClient() {
       const label = match[1];
       const markdownHref = match[2];
       const plainHref = match[3];
-      const rawHref = markdownHref || plainHref;
-      const href = rawHref?.replace(/[),.!?;:]+$/g, "").replace(/^<|>$/g, "");
-      const trailingPunctuation = rawHref && href ? rawHref.slice(href.length) : "";
+      const href = markdownHref || plainHref;
 
       if (href) {
-        const normalizedHref = /^(https?:\/\/)/i.test(href) ? href : `https://${href}`;
         parts.push(
-          <a key={`${normalizedHref}-${match.index}`} href={normalizedHref} target="_blank" rel="noopener noreferrer">
+          <a key={`${href}-${match.index}`} href={href} target="_blank" rel="noopener noreferrer">
             {label || href}
           </a>
         );
-      }
-      if (trailingPunctuation) {
-        parts.push(trailingPunctuation);
       }
 
       lastIndex = pattern.lastIndex;
