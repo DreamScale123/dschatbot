@@ -223,6 +223,11 @@ button:hover:not(:disabled) {
   max-width: 90%;
 }
 
+.message a {
+  color: hsla(var(--hue), 70%, 35%, 1);
+  text-decoration: underline;
+}
+
 .input-row {
   display: flex;
   gap: 10px;
