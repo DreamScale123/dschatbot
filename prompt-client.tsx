@@ -4,19 +4,14 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const OPENAI_MODELS = [
-  // GPT-5 series
   { label: "GPT-5.4 Mini", value: "gpt-5.4-mini" },
-  // GPT-4.5 series
   { label: "GPT-4.5", value: "gpt-4.5" },
   { label: "GPT-4.5 Mini", value: "gpt-4.5-mini" },
-  // GPT-4.1 series
   { label: "GPT-4.1", value: "gpt-4.1" },
   { label: "GPT-4.1 Mini", value: "gpt-4.1-mini" },
   { label: "GPT-4.1 Nano", value: "gpt-4.1-nano" },
-  // GPT-4o series
   { label: "GPT-4o", value: "gpt-4o" },
   { label: "GPT-4o Mini", value: "gpt-4o-mini" },
-  // o-series reasoning
   { label: "o4 Mini", value: "o4-mini" },
   { label: "o3", value: "o3" },
   { label: "o3 Mini", value: "o3-mini" },
@@ -30,6 +25,8 @@ export default function AdminClient() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [kvAvailable, setKvAvailable] = useState<boolean | null>(null);
+
   const [files, setFiles] = useState<Array<{ id: string; filename?: string }>>([]);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [filesMessage, setFilesMessage] = useState<string | null>(null);
@@ -38,7 +35,9 @@ export default function AdminClient() {
   const [contentLoading, setContentLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [fileInput, setFileInput] = useState<File | null>(null);
+
   const [model, setModel] = useState("gpt-5.4-mini");
+  const [activeModel, setActiveModel] = useState<string | null>(null);
   const [savingModel, setSavingModel] = useState(false);
   const [modelMessage, setModelMessage] = useState<string | null>(null);
 
@@ -51,6 +50,7 @@ export default function AdminClient() {
     }
     const data = await res.json();
     setPrompt(data.prompt || "");
+    if (typeof data.kvAvailable === "boolean") setKvAvailable(data.kvAvailable);
     setLoading(false);
   }
 
@@ -70,7 +70,11 @@ export default function AdminClient() {
     const res = await fetch("/api/admin/model");
     if (!res.ok) return;
     const data = await res.json();
-    if (data.model) setModel(data.model);
+    if (data.model) {
+      setModel(data.model);
+      setActiveModel(data.model);
+    }
+    if (typeof data.kvAvailable === "boolean") setKvAvailable(data.kvAvailable);
   }
 
   useEffect(() => {
@@ -95,7 +99,9 @@ export default function AdminClient() {
       return;
     }
 
-    setMessage("Saved.");
+    const data = await res.json();
+    if (typeof data.kvAvailable === "boolean") setKvAvailable(data.kvAvailable);
+    setMessage(data.kvAvailable ? "Saved." : "Saved for this session only — connect Vercel KV to persist permanently.");
     setSaving(false);
   }
 
@@ -111,7 +117,10 @@ export default function AdminClient() {
       const data = await res.json().catch(() => ({}));
       setModelMessage(data.error || "Save failed");
     } else {
-      setModelMessage("Saved.");
+      const data = await res.json();
+      if (typeof data.kvAvailable === "boolean") setKvAvailable(data.kvAvailable);
+      setActiveModel(model);
+      setModelMessage(data.kvAvailable ? "Saved." : "Saved for this session only — connect Vercel KV to persist permanently.");
     }
     setSavingModel(false);
   }
@@ -147,7 +156,8 @@ export default function AdminClient() {
     setContentLoading(true);
     const res = await fetch(`/api/admin/files?id=${encodeURIComponent(file.id)}`);
     if (!res.ok) {
-      setFileContent("[Error loading file content]");
+      const data = await res.json().catch(() => ({}));
+      setFileContent(`[Error: ${data.error || "Could not load file"}]`);
     } else {
       const data = await res.json();
       setFileContent(data.content ?? "[No content returned]");
@@ -182,6 +192,26 @@ export default function AdminClient() {
           Log out
         </button>
       </div>
+
+      {kvAvailable === false && (
+        <div style={{
+          background: "rgba(255, 107, 107, 0.12)",
+          border: "1px solid rgba(192, 57, 43, 0.35)",
+          borderRadius: 12,
+          padding: "12px 16px",
+          fontSize: 13,
+          color: "#7b2020",
+          lineHeight: 1.6
+        }}>
+          <strong>Vercel KV not connected.</strong> Prompt and model changes will reset on each server restart.
+          To make changes permanent: go to your <a href="https://vercel.com/dashboard" target="_blank" rel="noreferrer" style={{ color: "#c0392b", textDecoration: "underline" }}>Vercel dashboard</a> → Storage → Create KV Store → connect it to this project → redeploy.
+        </div>
+      )}
+
+      <div className="header">
+        <div className="title" style={{ fontSize: 18 }}>System Prompt</div>
+      </div>
+
       {loading ? (
         <small>Loading prompt...</small>
       ) : (
@@ -199,12 +229,10 @@ export default function AdminClient() {
       <hr style={{ borderColor: "rgba(105, 181, 255, 0.2)", width: "100%" }} />
 
       <div className="header">
-        <div className="title" style={{ fontSize: 18 }}>
-          AI Model
-        </div>
-        <div className="subtitle">
-          Select the OpenAI model used for all chat responses.
-        </div>
+        <div className="title" style={{ fontSize: 18 }}>AI Model</div>
+        {activeModel && (
+          <div className="subtitle">Currently active: <strong>{activeModel}</strong></div>
+        )}
       </div>
 
       <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
@@ -242,12 +270,8 @@ export default function AdminClient() {
       <hr style={{ borderColor: "rgba(105, 181, 255, 0.2)", width: "100%" }} />
 
       <div className="header">
-        <div className="title" style={{ fontSize: 18 }}>
-          Knowledge Files
-        </div>
-        <div className="subtitle">
-          Upload care standards, charts, or SOPs (PDF, TXT, DOCX, CSV).
-        </div>
+        <div className="title" style={{ fontSize: 18 }}>Knowledge Files</div>
+        <div className="subtitle">Upload care standards, charts, or SOPs (PDF, TXT, DOCX, CSV).</div>
       </div>
 
       <form className="form-card" onSubmit={uploadFile}>

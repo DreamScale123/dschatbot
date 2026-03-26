@@ -3,22 +3,38 @@ const DEFAULT_MODEL = process.env.OPENAI_MODEL || "gpt-5.4-mini";
 
 let memoryModel: string | null = null;
 
-export async function getModel(): Promise<string> {
+async function kvAvailable(): Promise<boolean> {
+  if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) return false;
   try {
     const { kv } = await import("@vercel/kv");
-    const stored = await kv.get<string>(MODEL_KEY);
-    return stored || DEFAULT_MODEL;
+    await kv.ping();
+    return true;
   } catch {
-    return memoryModel || DEFAULT_MODEL;
+    return false;
   }
+}
+
+export async function getModel(): Promise<string> {
+  if (await kvAvailable()) {
+    try {
+      const { kv } = await import("@vercel/kv");
+      const stored = await kv.get<string>(MODEL_KEY);
+      return stored || DEFAULT_MODEL;
+    } catch {}
+  }
+  return memoryModel || DEFAULT_MODEL;
 }
 
 export async function setModel(model: string): Promise<void> {
   memoryModel = model;
-  try {
-    const { kv } = await import("@vercel/kv");
-    await kv.set(MODEL_KEY, model);
-  } catch {
-    // KV not configured — saved in memory only
+  if (await kvAvailable()) {
+    try {
+      const { kv } = await import("@vercel/kv");
+      await kv.set(MODEL_KEY, model);
+    } catch {}
   }
+}
+
+export async function isKvAvailable(): Promise<boolean> {
+  return kvAvailable();
 }

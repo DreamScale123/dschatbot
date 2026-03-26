@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { isAdminFromCookies } from "@/lib/auth";
-import { getModel, setModel } from "@/lib/model-store";
+import { getModel, setModel, isKvAvailable } from "@/lib/model-store";
 
 export async function GET() {
   if (!isAdminFromCookies()) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const model = await getModel();
-  return NextResponse.json({ model });
+  const [model, kvOk] = await Promise.all([getModel(), isKvAvailable()]);
+  return NextResponse.json({ model, kvAvailable: kvOk });
 }
 
 export async function POST(req: Request) {
@@ -20,5 +20,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
   await setModel(model.trim());
-  return NextResponse.json({ ok: true });
+  const kvOk = await isKvAvailable();
+  return NextResponse.json({ ok: true, kvAvailable: kvOk });
 }

@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { isAdminFromCookies } from "@/lib/auth";
-import { getSystemPrompt, setSystemPrompt } from "@/lib/prompt-store";
+import { getSystemPrompt, setSystemPrompt, isKvAvailable } from "@/lib/prompt-store";
 
 export async function GET() {
   if (!isAdminFromCookies()) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const prompt = await getSystemPrompt();
-  return NextResponse.json({ prompt });
+  const [prompt, kvOk] = await Promise.all([getSystemPrompt(), isKvAvailable()]);
+  return NextResponse.json({ prompt, kvAvailable: kvOk });
 }
 
 export async function POST(req: Request) {
@@ -20,5 +20,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
   await setSystemPrompt(prompt);
-  return NextResponse.json({ ok: true });
+  const kvOk = await isKvAvailable();
+  return NextResponse.json({ ok: true, kvAvailable: kvOk });
 }
